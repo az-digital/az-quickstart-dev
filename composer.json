@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "dealerdirect/phpcodesniffer-composer-installer": "7.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "0.7.0",
         "drupal/core-dev-pinned": "*",
         "mglaman/drupal-check": "1.1.2",
         "pheromone/phpcs-security-audit": "dev-master#1b8a61d4ac8f4f1554bcbf67865f8e1c1b213bdd",
