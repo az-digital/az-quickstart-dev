@@ -10,11 +10,17 @@
             "role": "Team"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/az-digital/phpcs-security-audit"
+        }
+    ],
     "require": {
         "dealerdirect/phpcodesniffer-composer-installer": "0.7.0",
         "drupal/core-dev-pinned": "*",
         "mglaman/drupal-check": "1.1.2",
-        "pheromone/phpcs-security-audit": "dev-master#1b8a61d4ac8f4f1554bcbf67865f8e1c1b213bdd",
+        "pheromone/phpcs-security-audit": "dev-master",
         "phpcompatibility/php-compatibility": "9.3.5",
         "sensiolabs/security-checker": "6.0.3"
     },
