@@ -24,7 +24,7 @@
         "drupal/core-dev-pinned": "*",
         "drupal/devel": "4.1.1",
         "kint-php/kint": "3.3",
-        "liuggio/fastest": "1.7.1",
+        "liuggio/fastest": "1.8.0",
         "mglaman/phpstan-drupal": "0.12.10",
         "pheromone/phpcs-security-audit": "dev-main",
         "phpcompatibility/php-compatibility": "9.3.5",
