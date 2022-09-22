@@ -29,7 +29,7 @@
         "drupal/core-dev-pinned": "*",
         "drupal/devel": "4.1.5",
         "drupal/migrate_devel": "2.0-alpha2",
-        "kint-php/kint": "4.1.4",
+        "kint-php/kint": "4.2.1",
         "liuggio/fastest": "1.8.0|1.10.0",
         "mglaman/phpstan-drupal": "1.1.25",
         "pheromone/phpcs-security-audit": "dev-main",
