@@ -34,7 +34,7 @@
         "mglaman/phpstan-drupal": "1.1.25",
         "pheromone/phpcs-security-audit": "dev-main",
         "phpcompatibility/php-compatibility": "9.3.5",
-        "phpstan/phpstan-deprecation-rules": "1.0.0"
+        "phpstan/phpstan-deprecation-rules": "1.1.1"
     },
     "extra": {
         "branch-alias": {
