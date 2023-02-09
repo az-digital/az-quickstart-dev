@@ -32,7 +32,7 @@
         "drupal/upgrade_status": "3.18",
         "kint-php/kint": "5.0.1",
         "liuggio/fastest": "1.8.0|1.10.0",
-        "mglaman/phpstan-drupal": "1.1.25",
+        "mglaman/phpstan-drupal": "1.1.29",
         "pheromone/phpcs-security-audit": "dev-main",
         "phpcompatibility/php-compatibility": "9.3.5",
         "phpstan/phpstan-deprecation-rules": "1.1.1"
