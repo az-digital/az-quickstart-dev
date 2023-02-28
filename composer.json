@@ -30,7 +30,7 @@
         "drupal/devel": "5.1.1",
         "drupal/migrate_devel": "2.0-alpha2",
         "drupal/upgrade_status": "3.18",
-        "kint-php/kint": "5.0.3",
+        "kint-php/kint": "5.0.4",
         "liuggio/fastest": "1.8.0|1.10.0",
         "mglaman/phpstan-drupal": "1.1.29",
         "pheromone/phpcs-security-audit": "dev-main",
