@@ -28,7 +28,7 @@
         "drupal/core-dev-pinned": "*",
         "drupal/devel": "5.1.1",
         "drupal/upgrade_status": "4.0.0",
-        "kint-php/kint": "5.0.5",
+        "kint-php/kint": "5.0.7",
         "liuggio/fastest": "1.11.0",
         "mglaman/phpstan-drupal": "^1.1.30",
         "pheromone/phpcs-security-audit": "dev-main",
