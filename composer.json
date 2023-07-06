@@ -23,7 +23,7 @@
     ],
     "require": {
         "az-digital/migrate_devel": "dev-az-digital",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
         "drupal/config_inspector": "2.1.0",
         "drupal/core-dev-pinned": "*",
         "drupal/devel": "5.1.1",
