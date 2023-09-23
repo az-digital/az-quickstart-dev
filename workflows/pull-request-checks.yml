@@ -13,36 +13,32 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
+      - name: Check for branch in Quickstart repo
+        id: check-quickstart-branch
+        run: |
+          EXISTS=$(gh api repos/az-digital/az_quickstart/branches/${{ github.head_ref }} -q '.name' || echo '')
+          if [[ -z $EXISTS ]]; then
+            echo "QUICKSTART_BRANCH_NAME=main" >> $GITHUB_ENV
+          else
+            echo "QUICKSTART_BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+          fi
+
       - name: Check for branch in scaffolding repo
         id: check-scaffolding-branch
-        env:
-          BRANCH: ${{ github.head_ref }}
         run: |
-          EXISTS=$(gh api repos/az-digital/az-quickstart-scaffolding/branches/$BRANCH -q '.name' || echo '')
+          EXISTS=$(gh api repos/az-digital/az-quickstart-scaffolding/branches/${{ github.head_ref }} -q '.name' || echo '')
           if [[ -z $EXISTS ]]; then
             echo "SCAFFOLDING_BRANCH_NAME=main" >> $GITHUB_ENV
           else
-            echo "SCAFFOLDING_BRANCH_NAME=$BRANCH" >> $GITHUB_ENV
+            echo "SCAFFOLDING_BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
           fi
+
       - name: Checkout scaffolding repo
         uses: actions/checkout@v4
-        needs: check-scaffolding-branch
         with:
           repository: az-digital/az-quickstart-scaffolding
           ref: ${{ env.SCAFFOLDING_BRANCH_NAME }}
           path: az-quickstart-scaffolding
-
-      - name: Check for branch in quickstart repo
-        id: check-quickstart-branch
-        env:
-          BRANCH: ${{ github.head_ref }}
-        run: |
-          EXISTS=$(gh api repos/az-digital/az_quickstart/branches/$BRANCH -q '.name' || echo '')
-          if [[ -z $EXISTS ]]; then
-            echo "QUICKSTART_BRANCH_NAME=main" >> $GITHUB_ENV
-          else
-            echo "QUICKSTART_BRANCH_NAME=$BRANCH" >> $GITHUB_ENV
-          fi
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -52,23 +48,22 @@ jobs:
           tools: composer:v2
 
       - name: Build Arizona Quickstart
-        plugin: Script
         run: |
           composer self-update
-          cd $HOME/az-quickstart-scaffolding
+          cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
           composer config repositories.az_quickstart vcs https://github.com/az-digital/az_quickstart.git
           composer config use-github-api false
-          composer require --no-update drupal/core-recommended:* zaporylie/composer-drupal-optimizations:* az-digital/az_quickstart:dev-${QUICKSTART_BRANCH_NAME}
+          composer require --no-update drupal/core-recommended:* zaporylie/composer-drupal-optimizations:* az-digital/az_quickstart:dev-${{ env.QUICKSTART_BRANCH_NAME }}
           composer require --no-update --dev az-digital/az-quickstart-dev:dev-${{ github.head_ref }}
           composer install -o
 
       - name: Run PHPCS
         run: |
-          cd $HOME/az-quickstart-scaffolding
+          cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
           ./vendor/bin/phpcs -sp --colors web/profiles/custom/az_quickstart'
 
       - name: Run PHPStan
         run: |
-          cd $HOME/az-quickstart-scaffolding
+          cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
           ./vendor/bin/phpstan analyse --configuration web/profiles/custom/az_quickstart/phpstan.neon web/profiles/custom/az_quickstart
 
