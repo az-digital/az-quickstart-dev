@@ -1,0 +1,69 @@
+name: Pull Request Checks
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  pre-merge-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Check for branch in Quickstart repo
+        id: check-quickstart-branch
+        run: |
+          EXISTS=$(gh api repos/az-digital/az_quickstart/branches/${{ github.head_ref }} -q '.name' || echo '')
+          if [[ -z $EXISTS ]]; then
+            echo "QUICKSTART_BRANCH_NAME=main" >> $GITHUB_ENV
+          else
+            echo "QUICKSTART_BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+          fi
+
+      - name: Check for branch in scaffolding repo
+        id: check-scaffolding-branch
+        run: |
+          EXISTS=$(gh api repos/az-digital/az-quickstart-scaffolding/branches/${{ github.head_ref }} -q '.name' || echo '')
+          if [[ -z $EXISTS ]]; then
+            echo "SCAFFOLDING_BRANCH_NAME=main" >> $GITHUB_ENV
+          else
+            echo "SCAFFOLDING_BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout scaffolding repo
+        uses: actions/checkout@v4
+        with:
+          repository: az-digital/az-quickstart-scaffolding
+          ref: ${{ env.SCAFFOLDING_BRANCH_NAME }}
+          path: az-quickstart-scaffolding
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, intl
+          tools: composer:v2
+
+      - name: Build Arizona Quickstart
+        run: |
+          composer self-update
+          cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
+          composer config repositories.az_quickstart vcs https://github.com/az-digital/az_quickstart.git
+          composer config use-github-api false
+          composer require --no-update drupal/core-recommended:* zaporylie/composer-drupal-optimizations:* az-digital/az_quickstart:dev-${{ env.QUICKSTART_BRANCH_NAME }}
+          composer require --no-update --dev az-digital/az-quickstart-dev:dev-${{ github.head_ref }}
+          composer install -o
+
+      - name: Run PHPCS
+        run: |
+          cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
+          ./vendor/bin/phpcs -sp --colors web/profiles/custom/az_quickstart'
+
+      - name: Run PHPStan
+        run: |
+          cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
+          ./vendor/bin/phpstan analyse --configuration web/profiles/custom/az_quickstart/phpstan.neon web/profiles/custom/az_quickstart
+
