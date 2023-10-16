@@ -60,7 +60,7 @@ jobs:
       - name: Run PHPCS
         run: |
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
-          ./vendor/bin/phpcs -sp --colors web/profiles/custom/az_quickstart
+          composer phpcs
 
       - name: Run PHPStan
         run: |
