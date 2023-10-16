@@ -26,7 +26,7 @@
         "drupal/config_inspector": "2.1.2",
         "drupal/core-dev-pinned": "*",
         "drupal/devel": "5.1.2",
-        "drupal/migrate_devel": "2.1.0",
+        "drupal/migrate_devel": "2.2.0",
         "drupal/upgrade_status": "4.0.0",
         "kint-php/kint": "5.0.7",
         "liuggio/fastest": "1.11.0",
