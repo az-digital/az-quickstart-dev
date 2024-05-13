@@ -27,7 +27,7 @@
         "drupal/core-dev-pinned": "*",
         "drupal/devel": "5.1.2",
         "drupal/migrate_devel": "2.3.0",
-        "drupal/upgrade_status": "4.0.0",
+        "drupal/upgrade_status": "4.3.0",
         "kint-php/kint": "5.1.0",
         "liuggio/fastest": "1.11.0",
         "mglaman/phpstan-drupal": "^1.1.30",
