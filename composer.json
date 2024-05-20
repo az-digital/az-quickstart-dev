@@ -33,7 +33,8 @@
         "mglaman/phpstan-drupal": "^1.1.30",
         "pheromone/phpcs-security-audit": "dev-main",
         "phpcompatibility/php-compatibility": "9.3.5",
-        "phpstan/phpstan-deprecation-rules": "^1.1.3"
+        "phpstan/phpstan-deprecation-rules": "^1.1.3",
+        "palantirnet/drupal-rector": "^0.18.6"
     },
     "extra": {
         "branch-alias": {
