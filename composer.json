@@ -23,12 +23,12 @@
     ],
     "require": {
         "dealerdirect/phpcodesniffer-composer-installer": "*",
-        "drupal/config_inspector": "2.1.7",
+        "drupal/config_inspector": "2.1.9",
         "drupal/core-dev-pinned": "*",
         "drupal/devel": "5.1.2",
         "drupal/migrate_devel": "2.3.0",
         "drupal/upgrade_status": "4.3.2",
-        "kint-php/kint": "5.1.0",
+        "kint-php/kint": "5.1.1",
         "liuggio/fastest": "1.11.0",
         "pheromone/phpcs-security-audit": "dev-main",
         "phpcompatibility/php-compatibility": "9.3.5"
