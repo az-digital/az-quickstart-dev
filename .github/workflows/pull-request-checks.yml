@@ -22,6 +22,8 @@ jobs:
           else
             echo "QUICKSTART_BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
           fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check for branch in scaffolding repo
         id: check-scaffolding-branch
@@ -32,6 +34,8 @@ jobs:
           else
             echo "SCAFFOLDING_BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
           fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout scaffolding repo
         uses: actions/checkout@v4
