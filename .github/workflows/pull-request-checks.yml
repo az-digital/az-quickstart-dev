@@ -22,6 +22,8 @@ jobs:
           else
             echo "QUICKSTART_BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
           fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check for branch in scaffolding repo
         id: check-scaffolding-branch
@@ -32,6 +34,8 @@ jobs:
           else
             echo "SCAFFOLDING_BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
           fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout scaffolding repo
         uses: actions/checkout@v4
@@ -53,7 +57,7 @@ jobs:
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
           composer config repositories.az_quickstart vcs https://github.com/az-digital/az_quickstart.git
           composer config use-github-api false
-          composer require --no-update drupal/core-recommended:* zaporylie/composer-drupal-optimizations:* az-digital/az_quickstart:dev-${{ env.QUICKSTART_BRANCH_NAME }}
+          composer require --no-update az-digital/az_quickstart:dev-${{ env.QUICKSTART_BRANCH_NAME }}
           composer require --no-update --dev az-digital/az-quickstart-dev:dev-${{ github.head_ref }}
           composer install -o
 
@@ -66,4 +70,3 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
           ./vendor/bin/phpstan analyse --configuration web/profiles/custom/az_quickstart/phpstan.neon web/profiles/custom/az_quickstart
-
