@@ -24,7 +24,7 @@
     "require": {
         "dealerdirect/phpcodesniffer-composer-installer": "*",
         "drupal/config_inspector": "2.1.9",
-        "drupal/core-dev-pinned": "*",
+        "drupal/core-dev": "*",
         "drupal/devel": "5.1.2 || 5.2.1",
         "drupal/migrate_devel": "2.3.0",
         "drupal/upgrade_status": "4.3.2",
