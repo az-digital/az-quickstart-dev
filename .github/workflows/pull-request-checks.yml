@@ -57,7 +57,7 @@ jobs:
           composer install -o
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: az-quickstart-scaffolding
           path: $GITHUB_WORKSPACE/az-quickstart-scaffolding/
