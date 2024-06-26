@@ -56,11 +56,21 @@ jobs:
           composer require --no-update --dev az-digital/az-quickstart-dev:dev-${{ github.head_ref }}
           composer install -o
 
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: az-quickstart-scaffolding
+          path: $GITHUB_WORKSPACE/az-quickstart-scaffolding/
+
   phpcs:
     name: PHP_CodeSniffer
     needs: composer
     runs-on: ubuntu-latest
     steps:    
+      - name: Download build artifact 
+        uses: actions/download-artifact@v4
+        with:
+          name: az-quickstart-scaffolding
       - name: Run PHPCS
         run: |
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
@@ -71,6 +81,10 @@ jobs:
     needs: composer
     runs-on: ubuntu-latest
     steps:
+      - name: Download build artifact 
+        uses: actions/download-artifact@v4
+        with:
+          name: az-quickstart-scaffolding
       - name: Run PHPStan
         run: |
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
