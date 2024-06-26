@@ -6,7 +6,7 @@ on:
 
 jobs:
   composer:
-    name: Build Arizona Quickstart with composer
+    name: Build AZQS with composer
     runs-on: ubuntu-latest
     steps:
       - name: Set up PHP
@@ -56,21 +56,22 @@ jobs:
           composer require --no-update --dev az-digital/az-quickstart-dev:dev-${{ github.head_ref }}
           composer install -o
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+      - name: Save build artifact
+        uses: actions/cache/save@v3
         with:
-          name: az-quickstart-scaffolding
-          path: ./
+          path: ${{ github.workspace }}/az-quickstart-scaffolding
+          key: azqs-build-${{ hashFiles('../composer.json') }}
 
   phpcs:
     name: PHP_CodeSniffer
     needs: composer
     runs-on: ubuntu-latest
-    steps:    
-      - name: Download build artifact 
-        uses: actions/download-artifact@v4
+    steps:
+      - name: Restore build artifact cache
+        uses: actions/cache/restore@3
         with:
-          name: az-quickstart-scaffolding
+          path: ${{ github.workspace }}/az-quickstart-scaffolding
+          key: azqs-build-${{ hashFiles('../composer.json') }}
       - name: Run PHPCS
         run: |
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
@@ -81,10 +82,11 @@ jobs:
     needs: composer
     runs-on: ubuntu-latest
     steps:
-      - name: Download build artifact 
-        uses: actions/download-artifact@v4
+      - name: Restore build artifact cache
+        uses: actions/cache/restore@3
         with:
-          name: az-quickstart-scaffolding
+          path: ${{ github.workspace }}/az-quickstart-scaffolding
+          key: azqs-build-${{ hashFiles('../composer.json') }}
       - name: Run PHPStan
         run: |
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
