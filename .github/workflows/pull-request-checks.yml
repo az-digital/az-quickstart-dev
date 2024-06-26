@@ -57,7 +57,7 @@ jobs:
           composer install -o
 
       - name: Save build artifact
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: ${{ github.workspace }}/az-quickstart-scaffolding
           key: azqs-build-${{ github.sha }}
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Restore build artifact cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/az-quickstart-scaffolding
           key: azqs-build-${{ github.sha }}
@@ -83,10 +83,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Restore build artifact cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/az-quickstart-scaffolding
-          key: azqs-build-${{ hashFiles('../composer.json') }}
+          key: azqs-build-${{ github.sha }}
       - name: Run PHPStan
         run: |
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
