@@ -5,32 +5,38 @@ on:
       - main
 
 jobs:
-  pre-merge-checks:
+  composer:
+    name: Build AZQS with composer
     runs-on: ubuntu-latest
     steps:
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl
+          tools: composer:v2
+
       - name: Checkout branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
 
-      - name: Check for branch in Quickstart repo
+      - name: Check for matching branch in Quickstart repo
         id: check-quickstart-branch
         run: |
-          EXISTS=$(gh api repos/az-digital/az_quickstart/branches/${{ github.head_ref }} -q '.name' || echo '')
-          if [[ -z $EXISTS ]]; then
-            echo "QUICKSTART_BRANCH_NAME=main" >> $GITHUB_ENV
+          if [ $(git ls-remote --heads https://github.com/az-digital/az_quickstart.git ${{ github.head_ref }} | wc -l) = 1 ]; then
+            echo "QUICKSTART_BRANCH_NAME=${{ github.head_ref }}" >> ${GITHUB_ENV}
           else
-            echo "QUICKSTART_BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+            echo "QUICKSTART_BRANCH_NAME=main" >> ${GITHUB_ENV}
           fi
 
-      - name: Check for branch in scaffolding repo
+      - name: Check for matching branch in scaffolding repo
         id: check-scaffolding-branch
         run: |
-          EXISTS=$(gh api repos/az-digital/az-quickstart-scaffolding/branches/${{ github.head_ref }} -q '.name' || echo '')
-          if [[ -z $EXISTS ]]; then
-            echo "SCAFFOLDING_BRANCH_NAME=main" >> $GITHUB_ENV
+          if [ $(git ls-remote --heads https://github.com/az-digital/az-quickstart-scaffolding.git ${{ github.head_ref }} | wc -l) = 1 ]; then
+            echo "SCAFFOLDING_BRANCH_NAME=${{ github.head_ref }}" >> ${GITHUB_ENV}
           else
-            echo "SCAFFOLDING_BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+            echo "SCAFFOLDING_BRANCH_NAME=main" >> ${GITHUB_ENV}
           fi
 
       - name: Checkout scaffolding repo
@@ -40,28 +46,47 @@ jobs:
           ref: ${{ env.SCAFFOLDING_BRANCH_NAME }}
           path: az-quickstart-scaffolding
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
-          extensions: mbstring, intl
-          tools: composer:v2
-
       - name: Build Arizona Quickstart
         run: |
           composer self-update
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
           composer config repositories.az_quickstart vcs https://github.com/az-digital/az_quickstart.git
           composer config use-github-api false
-          composer require --no-update drupal/core-recommended:* zaporylie/composer-drupal-optimizations:* az-digital/az_quickstart:dev-${{ env.QUICKSTART_BRANCH_NAME }}
+          composer require --no-update az-digital/az_quickstart:dev-${{ env.QUICKSTART_BRANCH_NAME }}
           composer require --no-update --dev az-digital/az-quickstart-dev:dev-${{ github.head_ref }}
           composer install -o
 
+      - name: Save build artifact
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ github.workspace }}/az-quickstart-scaffolding
+          key: azqs-build-${{ github.sha }}
+
+  phpcs:
+    name: PHP_CodeSniffer
+    needs: composer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restore build artifact cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/az-quickstart-scaffolding
+          key: azqs-build-${{ github.sha }}
       - name: Run PHPCS
         run: |
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
           composer phpcs
 
+  phpstan:
+    name: PHPStan 
+    needs: composer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restore build artifact cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ github.workspace }}/az-quickstart-scaffolding
+          key: azqs-build-${{ github.sha }}
       - name: Run PHPStan
         run: |
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
