@@ -28,7 +28,7 @@
         "drupal/devel": "5.1.2 || 5.2.1",
         "drupal/migrate_devel": "2.3.0",
         "drupal/upgrade_status": "4.3.5",
-        "kint-php/kint": "5.1.1",
+        "kint-php/kint": "6.0.1",
         "liuggio/fastest": "1.11.0",
         "pheromone/phpcs-security-audit": "dev-main",
         "phpcompatibility/php-compatibility": "9.3.5"
