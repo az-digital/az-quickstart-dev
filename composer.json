@@ -25,7 +25,7 @@
         "dealerdirect/phpcodesniffer-composer-installer": "*",
         "drupal/config_inspector": "2.1.9",
         "drupal/core-dev-pinned": "*",
-        "drupal/devel": "5.1.2 || 5.2.1",
+        "drupal/devel": "5.1.2 || 5.2.1 || 5.3.1",
         "drupal/migrate_devel": "3.0.0",
         "drupal/upgrade_status": "4.3.6",
         "kint-php/kint": "5.1.1",
