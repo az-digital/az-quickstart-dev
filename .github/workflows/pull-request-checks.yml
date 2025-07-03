@@ -29,8 +29,6 @@ jobs:
           else
             echo "QUICKSTART_BRANCH_NAME=main" >> ${GITHUB_ENV}
           fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check for matching branch in scaffolding repo
         id: check-scaffolding-branch
@@ -40,8 +38,6 @@ jobs:
           else
             echo "SCAFFOLDING_BRANCH_NAME=main" >> ${GITHUB_ENV}
           fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout scaffolding repo
         uses: actions/checkout@v4
@@ -82,7 +78,7 @@ jobs:
           composer phpcs
 
   phpstan:
-    name: PHPStan
+    name: PHPStan 
     needs: composer
     runs-on: ubuntu-latest
     steps:
@@ -95,3 +91,4 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
           ./vendor/bin/phpstan analyse --configuration web/profiles/custom/az_quickstart/phpstan.neon web/profiles/custom/az_quickstart
+
