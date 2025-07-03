@@ -27,7 +27,7 @@
         "drupal/core-dev": "*",
         "drupal/devel": "^5.1.2 || ^5.2.1 || ^5.3.1",
         "drupal/migrate_devel": "3.0.0",
-        "drupal/upgrade_status": "4.3.7",
+        "drupal/upgrade_status": "4.3.8",
         "kint-php/kint": "5.1.1",
         "liuggio/fastest": "1.11.0",
         "pheromone/phpcs-security-audit": "dev-main",
