@@ -5,6 +5,8 @@ updates:
     target-branch: "main"
     schedule:
       interval: "daily"
+    labels:
+      - "3.x only"
   - package-ecosystem: "composer"
     directory: "/"
     target-branch: "1.x"
