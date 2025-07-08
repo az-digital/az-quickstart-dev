@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - main
+      - 1.x
 
 jobs:
   composer:
@@ -12,14 +13,12 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
           extensions: mbstring, intl
           tools: composer:v2
 
       - name: Checkout branch
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
 
       - name: Check for matching branch in Quickstart repo
         id: check-quickstart-branch
@@ -27,7 +26,7 @@ jobs:
           if [ $(git ls-remote --heads https://github.com/az-digital/az_quickstart.git ${{ github.head_ref }} | wc -l) = 1 ]; then
             echo "QUICKSTART_BRANCH_NAME=${{ github.head_ref }}" >> ${GITHUB_ENV}
           else
-            echo "QUICKSTART_BRANCH_NAME=main" >> ${GITHUB_ENV}
+            echo "QUICKSTART_BRANCH_NAME=${{ github.base_ref }}" >> ${GITHUB_ENV}
           fi
 
       - name: Check for matching branch in scaffolding repo
@@ -36,7 +35,7 @@ jobs:
           if [ $(git ls-remote --heads https://github.com/az-digital/az-quickstart-scaffolding.git ${{ github.head_ref }} | wc -l) = 1 ]; then
             echo "SCAFFOLDING_BRANCH_NAME=${{ github.head_ref }}" >> ${GITHUB_ENV}
           else
-            echo "SCAFFOLDING_BRANCH_NAME=main" >> ${GITHUB_ENV}
+            echo "SCAFFOLDING_BRANCH_NAME=${{ github.base_ref }}" >> ${GITHUB_ENV}
           fi
 
       - name: Checkout scaffolding repo
