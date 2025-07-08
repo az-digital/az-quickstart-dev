@@ -11,6 +11,7 @@ The `main` branch can be used with Composer in one of the following ways:
 
 ```json
 "az-digital/az-quickstart-dev": "3.x-dev"
+```
 
 or: 
 
