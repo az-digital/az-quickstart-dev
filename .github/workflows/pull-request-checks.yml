@@ -47,7 +47,7 @@ jobs:
             echo "SCAFFOLDING_BRANCH_NAME=${AZ_TARGET_REF}" >> ${GITHUB_ENV}
           else
             echo "SCAFFOLDING_BRANCH_NAME=${DEFAULT_SCAFFOLD_BRANCH}" >> ${GITHUB_ENV}
-          fi
+          fi  
 
       - name: Checkout scaffolding repo
         uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
           else
             DEV_PACKAGE_VERSION="dev-${AZ_SOURCE_REF}"
           fi
-          composer require --no-update --dev az-digital/az-quickstart-dev:dev-${DEV_PACKAGE_VERSION}
+          composer require --no-update --dev az-digital/az-quickstart-dev:${DEV_PACKAGE_VERSION}
           composer install -o
 
       - name: Save build artifact
