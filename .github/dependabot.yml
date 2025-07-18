@@ -2,7 +2,15 @@ version: 2
 updates:
   - package-ecosystem: "composer"
     directory: "/"
+    target-branch: "main"
     schedule:
       interval: "daily"
-    reviewers:
-      - "az-digital/developers"
+    labels:
+      - "3.x only"
+  - package-ecosystem: "composer"
+    directory: "/"
+    target-branch: "1.x"
+    schedule:
+      interval: "daily"
+    labels:
+      - "1.x only"
