@@ -14,29 +14,40 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: mbstring, intl
-          tools: composer:v2
 
-      - name: Checkout branch
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Check for matching branch in Quickstart repo
-        id: check-quickstart-branch
+      - name: Find the pull request source branch name
         run: |
-          if [ $(git ls-remote --heads https://github.com/az-digital/az_quickstart.git ${{ github.head_ref }} | wc -l) = 1 ]; then
-            echo "QUICKSTART_BRANCH_NAME=${{ github.head_ref }}" >> ${GITHUB_ENV}
-          else
-            echo "QUICKSTART_BRANCH_NAME=${{ github.base_ref }}" >> ${GITHUB_ENV}
-          fi
-
-      - name: Check for matching branch in scaffolding repo
-        id: check-scaffolding-branch
+          echo "AZ_SOURCE_REF=${GITHUB_HEAD_REF}" >> ${GITHUB_ENV}
+          echo "AZ_TARGET_REF=${GITHUB_BASE_REF}" >> ${GITHUB_ENV}
+      - name: Set default branches for scaffolding and profile repos if ref is 1.* 
+        if: startsWith(github.base_ref, '1.') || startsWith(github.ref_name, '1.')
+        id: test-1-x
         run: |
-          if [ $(git ls-remote --heads https://github.com/az-digital/az-quickstart-scaffolding.git ${{ github.head_ref }} | wc -l) = 1 ]; then
-            echo "SCAFFOLDING_BRANCH_NAME=${{ github.head_ref }}" >> ${GITHUB_ENV}
+          echo "DEFAULT_SCAFFOLD_BRANCH=2.x" >> ${GITHUB_ENV}
+          echo "DEFAULT_PROFILE_BRANCH=2.x" >> ${GITHUB_ENV}
+      - name: Fallback to main branch 
+        if: steps.test-1-x.outcome == 'skipped'
+        run: |
+          echo "DEFAULT_SCAFFOLD_BRANCH=main" >> ${GITHUB_ENV}
+          echo "DEFAULT_PROFILE_BRANCH=main" >> ${GITHUB_ENV}
+      - name: Set variables
+        run: |
+          if [ $(git ls-remote --heads https://github.com/az-digital/az_quickstart.git $AZ_SOURCE_REF | wc -l) = 1 ]; then
+            echo "QUICKSTART_BRANCH_NAME=${AZ_SOURCE_REF}" >> ${GITHUB_ENV}
+          elif [ $(git ls-remote --heads https://github.com/az-digital/az_quickstart.git $AZ_TARGET_REF | wc -l) = 1 ]; then
+            echo "QUICKSTART_BRANCH_NAME=${AZ_TARGET_REF}" >> ${GITHUB_ENV}
           else
-            echo "SCAFFOLDING_BRANCH_NAME=${{ github.base_ref }}" >> ${GITHUB_ENV}
+            echo "QUICKSTART_BRANCH_NAME=${DEFAULT_PROFILE_BRANCH}" >> ${GITHUB_ENV}
           fi
+          if [ $(git ls-remote --heads https://github.com/az-digital/az-quickstart-scaffolding.git $AZ_SOURCE_REF | wc -l) = 1 ]; then
+            echo "SCAFFOLDING_BRANCH_NAME=${AZ_SOURCE_REF}" >> ${GITHUB_ENV}
+          elif [ $(git ls-remote --heads https://github.com/az-digital/az-quickstart-scaffolding.git $AZ_TARGET_REF | wc -l) = 1 ]; then
+            echo "SCAFFOLDING_BRANCH_NAME=${AZ_TARGET_REF}" >> ${GITHUB_ENV}
+          else
+            echo "SCAFFOLDING_BRANCH_NAME=${DEFAULT_SCAFFOLD_BRANCH}" >> ${GITHUB_ENV}
+          fi  
 
       - name: Checkout scaffolding repo
         uses: actions/checkout@v4
@@ -47,12 +58,16 @@ jobs:
 
       - name: Build Arizona Quickstart
         run: |
-          composer self-update
           cd $GITHUB_WORKSPACE/az-quickstart-scaffolding
           composer config repositories.az_quickstart vcs https://github.com/az-digital/az_quickstart.git
           composer config use-github-api false
-          composer require --no-update az-digital/az_quickstart:dev-${{ env.QUICKSTART_BRANCH_NAME }}
-          composer require --no-update --dev az-digital/az-quickstart-dev:dev-${{ github.head_ref }}
+          ./quickstart_branch.sh --branch ${QUICKSTART_BRANCH_NAME}
+          if [[ ${AZ_SOURCE_REF} =~ ^[0-9]\.[0-9x] ]]; then
+            DEV_PACKAGE_VERSION="${AZ_SOURCE_REF}-dev"
+          else
+            DEV_PACKAGE_VERSION="dev-${AZ_SOURCE_REF}"
+          fi
+          composer require --no-update --dev az-digital/az-quickstart-dev:${DEV_PACKAGE_VERSION}
           composer install -o
 
       - name: Save build artifact
