@@ -6,6 +6,8 @@ updates:
     schedule:
       interval: "daily"
     labels:
+      - "dependencies"
+      - "php"
       - "3.x only"
   - package-ecosystem: "composer"
     directory: "/"
@@ -13,4 +15,31 @@ updates:
     schedule:
       interval: "daily"
     labels:
+      - "dependencies"
+      - "php"
+      - "1.x only"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: main
+    schedule:
+      interval: "daily"
+    cooldown:
+      default-days: 5
+    labels:
+      - "dependencies"
+      - "github_actions"
+      - "ci"
+      - "3.x only"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "1.x"
+    schedule:
+      interval: "daily"
+    cooldown:
+      default-days: 5
+    labels:
+      - "dependencies"
+      - "github_actions"
+      - "ci"
       - "1.x only"
