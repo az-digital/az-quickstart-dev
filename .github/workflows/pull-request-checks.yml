@@ -15,7 +15,7 @@ jobs:
         with:
           php-version: '8.3'
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Find the pull request source branch name
         run: |
@@ -50,7 +50,7 @@ jobs:
           fi  
 
       - name: Checkout scaffolding repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: az-digital/az-quickstart-scaffolding
           ref: ${{ env.SCAFFOLDING_BRANCH_NAME }}
