@@ -1,0 +1,110 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches:
+      - 'main'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  # Works out which az_quickstart branches to test against. The list comes from
+  # the branches the az_quickstart CI workflow runs on, so it follows release
+  # branches being added and retired there. The 2.x series is left out because
+  # it uses the 1.x branch of this package.
+  setup:
+    name: Find supported Quickstart branches
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Build matrix from the az_quickstart CI workflow
+        id: matrix
+        run: |
+          curl -fsSL -o quickstart-ci.yml https://raw.githubusercontent.com/az-digital/az_quickstart/main/.github/workflows/ci.yml
+          # The development branch gets the full set of checks and release
+          # branches get a reduced set. Leaving quickstart-ref empty for main
+          # lets a pull request here be tested with a same-named branch of
+          # az_quickstart, if one exists.
+          MATRIX=$(yq -o=json '.on.push.branches' quickstart-ci.yml | jq -c '{
+            include: [
+              .[] | select(startswith("2.") | not) | {
+                name: ("Quickstart " + .),
+                "quickstart-ref": (if . == "main" then "" else . end),
+                full: (. == "main")
+              }
+            ]
+          }')
+          echo "$MATRIX" | jq .
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+
+  # Builds a Quickstart site with this branch of the dev package and runs the
+  # shared Quickstart checks against it, once for each supported az_quickstart
+  # branch. Every branch is tested with the same copy of the shared workflow.
+  ci:
+    name: ${{ matrix.name }}
+    needs: setup
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    # TODO: Change this ref to @main before merging. It temporarily points at
+    # the az-digital/az_quickstart#6275 branch, which adds the shared workflow.
+    uses: az-digital/az_quickstart/.github/workflows/ci-reusable.yml@issue/6273-reusable-ci-workflow
+    permissions:
+      contents: read
+      # Required by the shared workflow's eslint job, even though it is
+      # disabled below.
+      checks: write
+      pull-requests: read
+    with:
+      quickstart-ref: ${{ matrix.quickstart-ref }}
+      composer-validate: ${{ matrix.full }}
+      phpunit: ${{ matrix.full }}
+      upgrade-status: ${{ matrix.full }}
+      # This package is only installed as a dev dependency, which the composer
+      # audit check excludes.
+      composer-audit: false
+      # These checks only apply to the az_quickstart repository itself.
+      eslint: false
+      yarn-audit: false
+
+  # Alternative to the matrix job above, in case the release branches ever need
+  # to be tested with their own copy of the shared workflow (for example if
+  # they stop sharing a PHP version). Each job calls the copy of the workflow
+  # from the branch it tests. The ref after the @ selects the workflow copy and
+  # quickstart-ref selects the profile branch to build, so the two must match.
+  # The shared workflow must exist on each branch that is called, and the list
+  # of jobs has to be kept up to date by hand.
+  #
+  # qs-main:
+  #   name: Quickstart main
+  #   uses: az-digital/az_quickstart/.github/workflows/ci-reusable.yml@main
+  #   permissions:
+  #     contents: read
+  #     checks: write
+  #     pull-requests: read
+  #   with:
+  #     composer-audit: false
+  #     eslint: false
+  #     yarn-audit: false
+  #
+  # qs-3-6:
+  #   name: Quickstart 3.6.x
+  #   uses: az-digital/az_quickstart/.github/workflows/ci-reusable.yml@3.6.x
+  #   permissions:
+  #     contents: read
+  #     checks: write
+  #     pull-requests: read
+  #   with:
+  #     quickstart-ref: 3.6.x
+  #     composer-validate: false
+  #     phpunit: false
+  #     upgrade-status: false
+  #     composer-audit: false
+  #     eslint: false
+  #     yarn-audit: false
